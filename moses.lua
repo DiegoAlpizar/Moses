@@ -21,7 +21,7 @@ local rawget                     = rawget
 local unpack                     = table.unpack or unpack
 local pairs,ipairs               = pairs,ipairs
 local error                      = error
-local clock                      = os.clock
+local clock                      = os and os.clock or nil
 local M                          = {}
 
 
@@ -207,7 +207,7 @@ M.operator.le = function(a,b) return a <= b end
 M.operator.ge = function(a,b) return a >= b end
 
 --- Returns logical a and b. <em>Aliased as `op.land`</em>.
--- @name operator.ge
+-- @name operator.land
 -- @param a a value
 -- @param b a value
 -- @return a and b
@@ -384,15 +384,33 @@ function M.cycle(t, n)
   end
 end
 
---- Maps `f (v, k)` on value-key pairs, collects and returns the results.
+--- Maps `f (v, k)` on value-key pairs, collects and returns the results. 
+-- Uses `pairs` to iterate over elements in `t`.
 -- <br/><em>Aliased as `collect`</em>.
 -- @name map
 -- @param t a table
 -- @param f  an iterator function, prototyped as `f (v, k)`
 -- @return a table of results
+-- @see mapi
 function M.map(t, f)
   local _t = {}
   for index,value in pairs(t) do
+    local k, kv, v = index, f(value, index)
+    _t[v and kv or k] = v or kv
+  end
+  return _t
+end
+
+--- Maps `f (v, k)` on value-key pairs, collects and returns the results. 
+-- Uses `ipairs` to iterate over elements in `t`.
+-- @name mapi
+-- @param t a table
+-- @param f  an iterator function, prototyped as `f (v, k)`
+-- @return a table of results
+-- @see map
+function M.mapi(t, f)
+  local _t = {}
+  for index,value in ipairs(t) do
     local k, kv, v = index, f(value, index)
     _t[v and kv or k] = v or kv
   end
@@ -1197,15 +1215,16 @@ end
 -- the same value are chunked together. Leaves the first argument untouched if it is not an array.
 -- @name chunk
 -- @param array an array
--- @param f an iterator function prototyped as `f (v, k)`
+-- @param f an iterator function prototyped as `f (v, k)`. Defaults to @{identity}.
 -- @return a table of chunks (arrays)
 -- @see zip
 function M.chunk(array, f)
   local ch, ck, prev, val = {}, 0
+  f = f or M.identity
   for k,v in ipairs(array) do
     val = f(v, k)
-    prev = (prev==nil) and val or prev
     ck = ((val~=prev) and (ck+1) or ck)
+    prev = (prev==nil) and val or prev
     if not ch[ck] then
       ch[ck] = {array[k]}
     else
@@ -2867,7 +2886,8 @@ function M.type(obj)
   local tp = type(obj)
   if tp == 'userdata' then
     local mt = getmetatable(obj)
-    if mt == getmetatable(io.stdout) then 
+    local stdout = io and io.stdout or nil
+    if stdout ~= nil and mt == getmetatable(stdout) then 
       return 'file'
     end
   end

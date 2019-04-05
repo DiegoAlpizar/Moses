@@ -254,6 +254,24 @@ M.map({a = 1, b = 2},function(v, k)
 end) -- => "{aa = 2, bb = 4}"
 ````
 
+### mapi (t, f)
+
+Executes a function on each value in a given array.
+
+```lua
+M.mapi({1,2,3},function(v) 
+  return v+10 
+end) -- => "{11,12,13}"
+````
+
+It only works for the array-part of the given table.
+
+```lua
+M.map({a = 1, 2, 3, 4, 5},function(v, k) 
+  return k..v 
+end) -- => "{'12','23','34','45'}"
+````
+
 ### reduce (t, f [, state = next(t)])
 *Aliases: `inject`, `foldl`*.
 
@@ -1022,13 +1040,20 @@ local array = {1,2,3,4,5,6,7,8,9}
 M.removeRange(array, 3,8) -- => "{1,2,9}"
 ````
 
-### chunk (array, f)
+### chunk (array [, f])
 
 Iterates over an array aggregating consecutive values in subsets tables, on the basis of the return value of `f(v, k, ...)`. Consecutive elements which return the same value are chunked together.
 
 ```lua
-local t = {1,1,2,3,3,4}
-M.chunk(t, function(v) return v%2==0 end) -- => "{{1,1},{2},{3,3},{4}}"
+local t = {1,5,2,4,3,3,4}
+M.chunk(t, function(v) return v%2==0 end) -- => "{{1,5},{2,4},{3,3},{4}}"
+````
+
+If not given, `f` defaults to `identity`.
+
+```lua
+local t = {1,5,2,4,3,3,4}
+M.chunk(t) -- => "{{1},{5},{2},{4},{3,3},{4}}"
 ````
 
 ### slice (array [, start = 1 [, finish = #array]])
