@@ -43,8 +43,8 @@ end
 
 local function  registerAssert ( Assert )
 	
-	local assertPositive	=	"assertion." .. Assert.name .. "positive" ;
-	local assertNegative	=	"assertion." .. Assert.name .. "negative" ;
+	local assertPositive	=	"assertion." .. Assert.name .. ".positive" ;
+	local assertNegative	=	"assertion." .. Assert.name .. ".negative" ;
 
 	Say: set( assertPositive , Assert.positiveMsg );
 	Say: set( assertNegative , Assert.negativeMsg );
