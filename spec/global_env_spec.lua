@@ -19,12 +19,19 @@ end
 
 local function  properties ( state , arguments )
 	
-	local tbl						=	arguments[ 1 ] ;
-	local properties				=	M.rest( arguments , 2 );
-	local assert_Tbl_HasProperty	=	M.bind( assert.has.property , tbl );
-	-- local assert_Tbl_HasProperty	=	M.partial( assert.property , tbl );
+	local tbl				=	arguments[ 1 ] ;
+	local properties		=	M.rest( arguments , 2 );
+	local absentProperties	=	{ } ;
 
-	M.forEachi( properties , assert_Tbl_HasProperty );
+	for _ , currentProperty in ipairs( properties )
+	do
+		if not M.has( tbl , currentProperty )
+		then
+			table.insert( absentProperties , currentProperty );
+		end
+	end
+
+	return  #absentProperties == 0 ;
 
 end
 
@@ -32,11 +39,19 @@ end
 -- Need to be a separate assert ?
 local function  hasNo_Properties ( state , arguments )
 	
-	local tbl						=	arguments[ 1 ] ;
-	local properties				=	M.rest( arguments , 2 ) ;
-	local assert_Tbl_HasNo_Property	=	M.bind( assert.has_no.property , tbl );
+	local tbl				=	arguments[ 1 ] ;
+	local properties		=	M.rest( arguments , 2 ) ;
+	local presentProperties	=	{ } ;
 
-	M.forEachi( properties , assert_Tbl_HasNo_Property );
+	for _ , currentProperty in ipairs( properties )
+	do
+		if M.has( tbl , currentProperty )
+		then
+			table.insert( presentProperties , currentProperty );
+		end
+	end
+
+	return  #presentProperties == 0 ;
 
 end
 
