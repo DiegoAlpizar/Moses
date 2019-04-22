@@ -92,8 +92,8 @@ local asserts	=	{
 	} ,
 	{
 		name		=	"hasNo_Properties" ,
-		positiveMsg	=	"Expected %s \nto have properties: %s" ,
-		negativeMsg	=	"Expected $s \nto not have properties: %s" ,
+		positiveMsg	=	"Expected %s \nto not have properties: %s" ,
+		negativeMsg	=	"Expected $s \nto have properties: %s" ,
 		func		=	hasNo_Properties
 	}
 
